@@ -30,7 +30,7 @@ app.get("/", function(req, res){
 app.post("/", function(req, res){
     let item = req.body.newItem;
     if (item === "") {
-        res.send("No item was specified");
+        res.render("noItem.ejs");
     }
     else{
         items.push(item);
