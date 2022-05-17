@@ -2,6 +2,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const { getDay, getDate } = require("./date");
+const date = require(__dirname+"/date.js");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
@@ -12,30 +14,41 @@ app.listen(3000, function(){
     console.log("server is running on port 3000...")
 });
 
-let items = ["Power on computer","Code JavaScript","Play video games"];
+//let items = ["Power on computer","Code JavaScript","Play video games"];
+
+const items = [];
+const workItems = [];
 
 //get methods
 app.get("/", function(req, res){
-    let today = new Date();
-    let options = {
-        day : "numeric",
-        weekday : "long",
-        year : "numeric"
-    };
 
-    let day = today.toLocaleDateString("en-US",options);
-    res.render("index", {kindOfDay: day, newItem: items});
+    const day = getDate();
+    res.render("index", {listTitle: day, listItems: items});
 });
 
+
 app.post("/", function(req, res){
-    let item = req.body.newItem;
+    const item = req.body.newItem;
     if (item === "") {
         res.render("noItem.ejs");
     }
     else{
-        items.push(item);
-        res.redirect("/");
+        if(req.body.button === "Work"){
+            workItems.push(item);
+            res.redirect("/work");
+        }
+        else{
+            items.push(item);
+            res.redirect("/");
+
+        }
     }
+
+    console.log(req.body.button);
+});
+
+app.get("/work", function(req, res){
+    res.render("index",{listTitle:"Work list", listItems: workItems});
 });
 
 app.post("/noItem", function(req, res){
